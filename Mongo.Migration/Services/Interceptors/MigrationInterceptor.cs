@@ -53,7 +53,10 @@ namespace Mongo.Migration.Services.Interceptors
 
         void IBsonSerializer.Serialize(BsonSerializationContext context, BsonSerializationArgs args, object value)
         {
-            Serialize(context, args, (TDocument)value);
+            if (value is not TDocument document)
+                throw new ArgumentException($"Value must be of type {typeof(TDocument).Name}", nameof(value));
+                
+            Serialize(context, args, document);
         }
     }
 }
