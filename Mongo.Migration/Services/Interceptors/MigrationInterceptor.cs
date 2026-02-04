@@ -1,4 +1,5 @@
-﻿using Mongo.Migration.Documents;
+﻿using System;
+using Mongo.Migration.Documents;
 using Mongo.Migration.Migrations.Document;
 
 using MongoDB.Bson.IO;
@@ -7,28 +8,32 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Mongo.Migration.Services.Interceptors
 {
-    internal class MigrationInterceptor<TDocument> : BsonClassMapSerializer<TDocument>
+    internal class MigrationInterceptor<TDocument> : IBsonSerializer<TDocument>
         where TDocument : class, IDocument
     {
         private readonly IDocumentVersionService _documentVersionService;
 
         private readonly IDocumentMigrationRunner _migrationRunner;
 
+        private readonly IBsonSerializer<TDocument> _innerSerializer;
+
         public MigrationInterceptor(IDocumentMigrationRunner migrationRunner, IDocumentVersionService documentVersionService)
-            : base(BsonClassMap.LookupClassMap(typeof(TDocument)))
         {
             this._migrationRunner = migrationRunner;
             this._documentVersionService = documentVersionService;
+            this._innerSerializer = new BsonClassMapSerializer<TDocument>(BsonClassMap.LookupClassMap(typeof(TDocument)));
         }
 
-        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, TDocument value)
+        public Type ValueType => typeof(TDocument);
+
+        public void Serialize(BsonSerializationContext context, BsonSerializationArgs args, TDocument value)
         {
             this._documentVersionService.DetermineVersion(value);
 
-            base.Serialize(context, args, value);
+            this._innerSerializer.Serialize(context, args, value);
         }
 
-        public override TDocument Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        public TDocument Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
         {
             // TODO: Performance? LatestVersion, dont do anything
             var document = BsonDocumentSerializer.Instance.Deserialize(context);
@@ -38,7 +43,17 @@ namespace Mongo.Migration.Services.Interceptors
             var migratedContext =
                 BsonDeserializationContext.CreateRoot(new BsonDocumentReader(document));
 
-            return base.Deserialize(migratedContext, args);
+            return this._innerSerializer.Deserialize(migratedContext, args);
+        }
+
+        object IBsonSerializer.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        {
+            return Deserialize(context, args);
+        }
+
+        void IBsonSerializer.Serialize(BsonSerializationContext context, BsonSerializationArgs args, object value)
+        {
+            Serialize(context, args, (TDocument)value);
         }
     }
 }
