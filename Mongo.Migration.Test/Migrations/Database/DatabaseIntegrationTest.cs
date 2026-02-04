@@ -32,7 +32,7 @@ namespace Mongo.Migration.Test.Migrations.Database
 
         public void Dispose()
         {
-            this._mongoContainer?.DisposeAsync().AsTask().Wait();
+            this._mongoContainer?.DisposeAsync().AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         protected virtual void OnSetUp(DocumentVersion databaseMigrationVersion)
@@ -42,7 +42,7 @@ namespace Mongo.Migration.Test.Migrations.Database
                 .WithImage("mongo:latest")
                 .Build();
 
-            this._mongoContainer.StartAsync().Wait();
+            this._mongoContainer.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
             this._client = new MongoClient(this._mongoContainer.GetConnectionString());
             this._db = this._client.GetDatabase(this.DatabaseName);

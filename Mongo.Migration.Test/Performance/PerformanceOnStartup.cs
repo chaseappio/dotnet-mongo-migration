@@ -36,7 +36,7 @@ namespace Mongo.Migration.Test.Performance
         {
             MongoMigrationClient.Reset();
             this._client = null;
-            this._mongoContainer?.DisposeAsync().AsTask().Wait();
+            this._mongoContainer?.DisposeAsync().AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         [SetUp]
@@ -47,7 +47,7 @@ namespace Mongo.Migration.Test.Performance
                 .WithImage("mongo:latest")
                 .Build();
 
-            this._mongoContainer.StartAsync().Wait();
+            this._mongoContainer.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
             this._client = new MongoClient(this._mongoContainer.GetConnectionString());
         }

@@ -20,7 +20,7 @@ namespace Mongo.Migration.Test
 
         public void Dispose()
         {
-            this._mongoContainer?.DisposeAsync().AsTask().Wait();
+            this._mongoContainer?.DisposeAsync().AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         protected void OnSetUp()
@@ -30,7 +30,7 @@ namespace Mongo.Migration.Test
                 .WithImage("mongo:latest")
                 .Build();
 
-            this._mongoContainer.StartAsync().Wait();
+            this._mongoContainer.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
             this._client = new MongoClient(this._mongoContainer.GetConnectionString());
 
