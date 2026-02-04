@@ -7,7 +7,7 @@ using Mongo.Migration.Migrations.Database;
 using Mongo.Migration.Startup;
 using Mongo.Migration.Startup.Static;
 
-using Mongo2Go;
+using Testcontainers.MongoDb;
 
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -24,7 +24,7 @@ namespace Mongo.Migration.Test.Migrations.Database
 
         protected IMongoDatabase _db;
 
-        protected MongoDbRunner _mongoToGoRunner;
+        protected MongoDbContainer _mongoContainer;
 
         protected virtual string DatabaseName { get; set; } = "DatabaseMigration";
 
@@ -32,20 +32,26 @@ namespace Mongo.Migration.Test.Migrations.Database
 
         public void Dispose()
         {
-            this._mongoToGoRunner?.Dispose();
+            this._mongoContainer?.DisposeAsync().AsTask().Wait();
         }
 
         protected virtual void OnSetUp(DocumentVersion databaseMigrationVersion)
         {
-            this._mongoToGoRunner = MongoDbRunner.Start();
-            this._client = new MongoClient(this._mongoToGoRunner.ConnectionString);
+            // Create and start MongoDB container with latest version
+            this._mongoContainer = new MongoDbBuilder()
+                .WithImage("mongo:latest")
+                .Build();
+
+            this._mongoContainer.StartAsync().Wait();
+
+            this._client = new MongoClient(this._mongoContainer.GetConnectionString());
             this._db = this._client.GetDatabase(this.DatabaseName);
             this._db.CreateCollection(this.CollectionName);
 
             this._components = new ComponentRegistry(
                 new MongoMigrationSettings
                 {
-                    ConnectionString = this._mongoToGoRunner.ConnectionString,
+                    ConnectionString = this._mongoContainer.GetConnectionString(),
                     Database = this.DatabaseName,
                     DatabaseMigrationVersion = databaseMigrationVersion
                 });

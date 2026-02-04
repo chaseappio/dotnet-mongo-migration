@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using Mongo.Migration.Startup;
 using Mongo.Migration.Startup.Static;
 
-using Mongo2Go;
+using Testcontainers.MongoDb;
 
 using MongoDB.Driver;
 
@@ -15,23 +16,29 @@ namespace Mongo.Migration.Test
 
         protected IComponentRegistry _components;
 
-        protected MongoDbRunner _mongoToGoRunner;
+        protected MongoDbContainer _mongoContainer;
 
         public void Dispose()
         {
-            this._mongoToGoRunner?.Dispose();
+            this._mongoContainer?.DisposeAsync().AsTask().Wait();
         }
 
         protected void OnSetUp()
         {
-            this._mongoToGoRunner = MongoDbRunner.Start();
-            this._client = new MongoClient(this._mongoToGoRunner.ConnectionString);
+            // Create and start MongoDB container with latest version
+            this._mongoContainer = new MongoDbBuilder()
+                .WithImage("mongo:latest")
+                .Build();
+
+            this._mongoContainer.StartAsync().Wait();
+
+            this._client = new MongoClient(this._mongoContainer.GetConnectionString());
 
             this._client.GetDatabase("PerformanceTest").CreateCollection("Test");
 
             this._components = new ComponentRegistry(
                 new MongoMigrationSettings
-                    { ConnectionString = this._mongoToGoRunner.ConnectionString, Database = "PerformanceTest" });
+                    { ConnectionString = this._mongoContainer.GetConnectionString(), Database = "PerformanceTest" });
             this._components.RegisterComponents(this._client);
         }
     }
