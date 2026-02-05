@@ -16,7 +16,7 @@ namespace Mongo.Migration.Test.Migrations.Document
     {
         private IDocumentMigrationRunner _runner;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             this.OnSetUp();
@@ -24,7 +24,7 @@ namespace Mongo.Migration.Test.Migrations.Document
             this._runner = this._components.Get<IDocumentMigrationRunner>();
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             this.Dispose();

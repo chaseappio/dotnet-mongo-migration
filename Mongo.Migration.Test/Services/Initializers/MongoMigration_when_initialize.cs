@@ -14,7 +14,7 @@ namespace Mongo.Migration.Test.Services.Initializers
     [TestFixture]
     public class MongoMigration_when_initialize
     {
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             MongoMigrationClient.Reset();

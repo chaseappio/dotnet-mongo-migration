@@ -15,7 +15,7 @@ namespace Mongo.Migration.Test.Services
     {
         private IDocumentVersionService _service;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             this.OnSetUp();
@@ -23,7 +23,7 @@ namespace Mongo.Migration.Test.Services
             this._service = this._components.Get<IDocumentVersionService>();
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             this.Dispose();

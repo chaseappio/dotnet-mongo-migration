@@ -12,13 +12,13 @@ namespace Mongo.Migration.Test.MongoDB
     [TestFixture]
     internal class MongoRegistrator_when_registrating : IntegrationTest
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             this.OnSetUp();
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             this.Dispose();

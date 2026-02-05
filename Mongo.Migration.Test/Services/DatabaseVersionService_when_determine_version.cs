@@ -20,7 +20,7 @@ namespace Mongo.Migration.Test.Services
             this._service = this._components.Get<IDatabaseVersionService>();
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             this.Dispose();

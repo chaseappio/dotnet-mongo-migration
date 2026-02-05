@@ -10,13 +10,13 @@ namespace Mongo.Migration.Test.Services.Interceptors
     [TestFixture]
     internal class MigrationInterceptorProvider_when_get_serializer : IntegrationTest
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             this.OnSetUp();
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             this.Dispose();

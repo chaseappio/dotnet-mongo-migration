@@ -51,7 +51,7 @@ namespace Mongo.Migration.Test.Documents.Serializers
             document.ToString().Should().Be("{ \"version\" : \"0.0.1\" }");
         }
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             this._serializer = new DocumentVersionSerializer();

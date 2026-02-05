@@ -13,7 +13,7 @@ namespace Mongo.Migration.Test.Migrations.Database
     {
         private IDatabaseMigrationRunner _runner;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             base.OnSetUp(DocumentVersion.Empty());
@@ -21,7 +21,7 @@ namespace Mongo.Migration.Test.Migrations.Database
             this._runner = this._components.Get<IDatabaseMigrationRunner>();
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             this.Dispose();

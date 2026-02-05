@@ -31,7 +31,7 @@ namespace Mongo.Migration.Test.Performance
 
         private MongoDbContainer _mongoContainer;
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             MongoMigrationClient.Reset();
@@ -39,7 +39,7 @@ namespace Mongo.Migration.Test.Performance
             this._mongoContainer?.DisposeAsync().AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             // Create and start MongoDB container with latest version

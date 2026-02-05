@@ -12,13 +12,13 @@ namespace Mongo.Migration.Test.Services.Interceptors
     [TestFixture]
     internal class MigrationInterceptorFactory_when_creating : IntegrationTest
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             this.OnSetUp();
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             this.Dispose();
