@@ -7,7 +7,7 @@ using FluentAssertions;
 using Mongo.Migration.Startup.Static;
 using Mongo.Migration.Test.TestDoubles;
 
-using Mongo2Go;
+using Testcontainers.MongoDb;
 
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -29,21 +29,27 @@ namespace Mongo.Migration.Test.Performance
 
         private MongoClient _client;
 
-        private MongoDbRunner _runner;
+        private MongoDbContainer _mongoContainer;
 
         [TearDown]
         public void TearDown()
         {
             MongoMigrationClient.Reset();
             this._client = null;
-            this._runner.Dispose();
+            this._mongoContainer?.DisposeAsync().AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         [SetUp]
         public void SetUp()
         {
-            this._runner = MongoDbRunner.Start();
-            this._client = new MongoClient(this._runner.ConnectionString);
+            // Create and start MongoDB container with latest version
+            this._mongoContainer = new MongoDbBuilder()
+                .WithImage("mongo:latest")
+                .Build();
+
+            this._mongoContainer.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+
+            this._client = new MongoClient(this._mongoContainer.GetConnectionString());
         }
 
         [Test]

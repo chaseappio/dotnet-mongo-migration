@@ -14,6 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <LangVersion>default</LangVersion>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -148,7 +149,7 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mongo.Migration\Mongo.Migration.csproj">
+    <ProjectReference Include="..\Chassis.Mongo.Migration\Chassis.Mongo.Migration.csproj">
       <Project>{8dffd615-1e1a-4bed-8a96-caf4c3637e81}</Project>
       <Name>Mongo.Migration</Name>
     </ProjectReference>
