@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <LangVersion>Latest</LangVersion>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Embedded</DebugType>
+  </PropertyGroup>
+  <ItemGroup Condition="$(Configuration) == 'Release'">
+    <PackageReference Include="GitVersionTask" Version="5.5.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+</Project>
