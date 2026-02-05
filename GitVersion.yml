@@ -1,0 +1,24 @@
+next-version: 4.0.0
+mode: ContinuousDeployment
+continuous-delivery-fallback-tag: alpha
+branches: 
+  main:
+    increment: Minor
+  next:
+    mode: ContinuousDeployment
+    tag: 'next'
+    increment: Minor
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    regex: ^next$
+    source-branches:
+    - develop
+    - release
+    tracks-release-branches: false
+    is-release-branch: false
+    is-mainline: true
+    pre-release-weight: 55000
+ignore:
+  sha: []
+merge-message-formats:
+  chaseappio: '^Merge pull request #(?<PullRequestNumber>\d+) (from|in) (?:chaseappio\/(?<SourceBranch>[^\s]*))(?: into (?<TargetBranch>[^\s]*))*'

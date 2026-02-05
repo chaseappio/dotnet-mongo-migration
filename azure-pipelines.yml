@@ -1,0 +1,56 @@
+trigger:
+  tags:
+    include:
+      - 'v*'
+  branches:
+    include:
+      - 'main'
+      - 'next'
+
+pool: vmssagentpool
+
+pr:
+  branches:
+    include:
+      - "main"
+      - "next"
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: chaseappio/devops-ci-templates
+      ref: refs/heads/master
+      endpoint: chaseappio
+
+variables:
+- template: vars.yml@templates
+- name: sdk_version
+  value: 10.x
+- name: sln_path
+  value: Mongo.Migration.sln
+- name: DOCKER_API_VERSION          
+  value: '1.43'    
+  
+stages:
+  - stage: prepare
+    jobs:
+     - job: version
+       steps:
+         - template: version.yml@templates
+
+  - stage: build
+    condition: "succeeded()"
+    jobs:
+      - job: build
+        steps:
+         - template: build.yml@templates     
+           parameters:
+            sdk_version: $(sdk_version)
+            sln_path: $(sln_path)
+            tests: true
+
+         - template: pack.steps.yml@templates
+           parameters:
+             sln_path: $(sln_path)
+             condition: "and(succeeded(),or(eq(variables['publish_build'],'true'),eq(variables['build.sourceBranch'],'refs/heads/next')))"
